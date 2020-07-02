@@ -1,2 +1,3 @@
 # Semantic Version
-Python implementation of [semantic versioning](https://semver.org/)
+Python implementation of a [semantic versioned](https://semver.org/)
+`version` class.
