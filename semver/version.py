@@ -1,3 +1,4 @@
+from itertools import zip_longest
 import re
 
 
@@ -76,6 +77,7 @@ class Version:
     to parse the version string.
 
     """
+
     def __init__(self, version_string):
         regexp = re.compile((
             r'''^'''
@@ -106,7 +108,7 @@ class Version:
     @major.setter
     def major(self, value):
         """ Sets the major version """
-        self._major = value
+        self._major = int(value)
 
     @property
     def minor(self):
@@ -116,7 +118,7 @@ class Version:
     @minor.setter
     def minor(self, value):
         """ Sets the minor version """
-        self._minor = value
+        self._minor = int(value)
 
     @property
     def patch(self):
@@ -126,7 +128,7 @@ class Version:
     @patch.setter
     def patch(self, value):
         """ Sets the patch version """
-        self._patch = value
+        self._patch = int(value)
 
     @property
     def prerelease(self):
@@ -147,3 +149,107 @@ class Version:
     def buildmetadata(self, value):
         """ Sets the buildmetadata version """
         self._buildmetadata = value
+
+    def __str__(self):
+        basic_string = ".".join([str(self.major), str(self.minor), str(self.patch)])
+        if self.prerelease is not None:
+            basic_string += "-" + self.prerelease
+        if self.buildmetadata is not None:
+            basic_string += "+" + self.buildmetadata
+        return basic_string
+
+    def __gt__(self, other):
+        return self.compare(other) > 0
+
+    def __lt__(self, other):
+        return self.compare(other) < 0
+
+    def __eq__(self, other):
+        return self.compare(other) == 0
+
+    def __ge__(self, other):
+        return self.compare(other) >= 0
+
+    def __le__(self, other):
+        return self.compare(other) <= 0
+
+    def __ne__(self, other):
+        return self.compare(other) != 0
+
+    def compare(self, other):
+        """ Compares two versions and returns -1, 0, or 1
+
+        The __gt__, __lt__, __eq__, __ge__, __le__, and __ne__
+        relations are based on this.
+
+        Note that build metadata is NOT considered in precedence comparisons,
+        according to the specification.
+        """
+        if self.major < other.major:
+            return -1
+        elif self.major > other.major:
+            return 1
+        elif self.minor < other.minor:
+            return -1
+        elif self.minor > other.minor:
+            return 1
+        elif self.patch < other.patch:
+            return -1
+        elif self.patch > other.patch:
+            return 1
+
+        # At this point, we know the three primary components are equal
+
+        # 11.3 A pre-release version has lower precedence than a normal version
+        if all([self.prerelease is not None,
+                other.prerelease is None]):
+            return -1
+        if all([self.prerelease is None,
+                other.prerelease is not None]):
+            return 1
+        if all([self.prerelease is None,
+                other.prerelease is None]):
+            return 0
+
+        # 11.4 - Precedence for two pre-release versions with the same
+        # major, minor, and patch must be determined by comparing each
+        # dot-separated identifier from left to right until a difference
+        # is found
+
+        def is_integer(x):
+            return all([ch in "0123456789" for ch in str(x)])
+
+        these_fields = self.prerelease.split('.')
+        those_fields = other.prerelease.split('.')
+        for this, that in zip_longest(these_fields, those_fields):
+
+            # 11.4.4 Longer sets are greater than shorter sets
+            if this is None and that is not None:
+                return -1
+            if this is not None and that is None:
+                return 1
+
+            # 11.4.1 Integers are compared numerically
+            if is_integer(this) and is_integer(that):
+                this = int(this)
+                that = int(that)
+                if this < that:
+                    return -1
+                if this > that:
+                    return 1
+
+            # 11.4.3 Numerics are always less than non-numerics
+            if is_integer(this) and not is_integer(that):
+                return -1
+            if not is_integer(this) and is_integer(that):
+                return 1
+
+            # 11.4.2 Nonnumeric fields are compared lexicographically
+            if this < that:
+                return -1
+            if this > that:
+                return 1
+
+        # Welp, they must be equal
+
+        return 0
