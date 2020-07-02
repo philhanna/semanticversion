@@ -3,7 +3,7 @@ import unittest
 from semver.version import Version
 
 
-class TestVersion(unittest.TestCase):
+class TestSemanticTestCases(unittest.TestCase):
     #   Test data taken from https://regex101.com/r/Ly7O1x/3/
 
     # GOOD STRINGS
