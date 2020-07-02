@@ -176,6 +176,9 @@ class Version:
     def __ne__(self, other):
         return self.compare(other) != 0
 
+    def __hash__(self):
+        return hash(self.__str__())
+
     def compare(self, other):
         """ Compares two versions and returns -1, 0, or 1
 
