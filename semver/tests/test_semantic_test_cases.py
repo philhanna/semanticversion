@@ -3,7 +3,7 @@ import unittest
 from semver.version import Version
 
 
-class TestVersion(unittest.TestCase):
+class TestSemanticTestCases(unittest.TestCase):
     #   Test data taken from https://regex101.com/r/Ly7O1x/3/
 
     # GOOD STRINGS
@@ -284,7 +284,7 @@ class TestVersion(unittest.TestCase):
         with self.assertRaises(ValueError):
             Version('+invalid')
 
-    def test__invalid(self):
+    def test__invalid1(self):
         with self.assertRaises(ValueError):
             Version('-invalid')
 
@@ -312,11 +312,11 @@ class TestVersion(unittest.TestCase):
         with self.assertRaises(ValueError):
             Version('alpha.1')
 
-    def test_alpha_beta(self):
+    def test_alpha_beta2(self):
         with self.assertRaises(ValueError):
             Version('alpha+beta')
 
-    def test_alpha_beta(self):
+    def test_alpha_beta3(self):
         with self.assertRaises(ValueError):
             Version('alpha_beta')
 
@@ -332,7 +332,7 @@ class TestVersion(unittest.TestCase):
         with self.assertRaises(ValueError):
             Version('beta')
 
-    def test_1_0_0_alpha_beta(self):
+    def test_1_0_0_alpha_beta3(self):
         with self.assertRaises(ValueError):
             Version('1.0.0-alpha_beta')
 
@@ -380,7 +380,7 @@ class TestVersion(unittest.TestCase):
         with self.assertRaises(ValueError):
             Version('1.1.01')
 
-    def test_1_2(self):
+    def test_1_23(self):
         with self.assertRaises(ValueError):
             Version('1.2')
 
