@@ -30,4 +30,52 @@ class Version:
         self.prerelease = m.group('prerelease')
         self.buildmetadata = m.group('buildmetadata')
 
+    @property
+    def major(self):
+        """ Returns the major version """
+        return self._major
 
+    @major.setter
+    def major(self, value):
+        """ Sets the major version """
+        self._major = value
+
+    @property
+    def minor(self):
+        """ Returns the minor version """
+        return self._minor
+
+    @minor.setter
+    def minor(self, value):
+        """ Sets the minor version """
+        self._minor = value
+
+    @property
+    def patch(self):
+        """ Returns the patch version """
+        return self._patch
+
+    @patch.setter
+    def patch(self, value):
+        """ Sets the patch version """
+        self._patch = value
+
+    @property
+    def prerelease(self):
+        """ Returns the prerelease version """
+        return self._prerelease
+
+    @prerelease.setter
+    def prerelease(self, value):
+        """ Sets the prerelease version """
+        self._prerelease = value
+
+    @property
+    def buildmetadata(self):
+        """ Returns the buildmetadata version """
+        return self._buildmetadata
+
+    @buildmetadata.setter
+    def buildmetadata(self, value):
+        """ Sets the buildmetadata version """
+        self._buildmetadata = value
