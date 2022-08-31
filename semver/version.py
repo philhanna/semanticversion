@@ -1,7 +1,13 @@
+from functools import total_ordering
 from itertools import zip_longest
 import re
 
 
+def is_numeric(arg: str) -> bool:
+    return all([c.isdigit() for c in arg])
+
+
+@total_ordering
 class Version:
     """ A semantic versioned version class
 
@@ -78,7 +84,8 @@ class Version:
 
     """
 
-    def __init__(self, version_string):
+    def __init__(self, version_string: str):
+        self._version_string = version_string
         regexp = re.compile((
             r'''^'''
             r'''(?P<major>0|[1-9]\d*)'''
@@ -94,63 +101,42 @@ class Version:
         if not m:
             errmsg = f"{version_string} is not a valid semantic version number. See https://semver.org"
             raise ValueError(errmsg)
-        self.major = m.group('major')
-        self.minor = m.group('minor')
-        self.patch = m.group('patch')
-        self.prerelease = m.group('prerelease')
-        self.buildmetadata = m.group('buildmetadata')
+        self._major: int = int(m.group('major'))
+        self._minor: int = int(m.group('minor'))
+        self._patch: int = int(m.group('patch'))
+        self._prerelease = m.group('prerelease')
+        self._buildmetadata = m.group('buildmetadata')
+
+    @property
+    def version_string(self):
+        return self._version_string
 
     @property
     def major(self):
         """ Returns the major version """
         return self._major
 
-    @major.setter
-    def major(self, value):
-        """ Sets the major version """
-        self._major = int(value)
-
     @property
     def minor(self):
         """ Returns the minor version """
         return self._minor
-
-    @minor.setter
-    def minor(self, value):
-        """ Sets the minor version """
-        self._minor = int(value)
 
     @property
     def patch(self):
         """ Returns the patch version """
         return self._patch
 
-    @patch.setter
-    def patch(self, value):
-        """ Sets the patch version """
-        self._patch = int(value)
-
     @property
     def prerelease(self):
         """ Returns the prerelease version """
         return self._prerelease
-
-    @prerelease.setter
-    def prerelease(self, value):
-        """ Sets the prerelease version """
-        self._prerelease = value
 
     @property
     def buildmetadata(self):
         """ Returns the buildmetadata version """
         return self._buildmetadata
 
-    @buildmetadata.setter
-    def buildmetadata(self, value):
-        """ Sets the buildmetadata version """
-        self._buildmetadata = value
-
-    def __str__(self):
+    def __str__(self) -> str:
         basic_string = ".".join([str(self.major), str(self.minor), str(self.patch)])
         if self.prerelease is not None:
             basic_string += "-" + self.prerelease
@@ -161,20 +147,8 @@ class Version:
     def __gt__(self, other):
         return self.compare(other) > 0
 
-    def __lt__(self, other):
-        return self.compare(other) < 0
-
     def __eq__(self, other):
         return self.compare(other) == 0
-
-    def __ge__(self, other):
-        return self.compare(other) >= 0
-
-    def __le__(self, other):
-        return self.compare(other) <= 0
-
-    def __ne__(self, other):
-        return self.compare(other) != 0
 
     def __hash__(self):
         return hash(self.__str__())
@@ -219,9 +193,6 @@ class Version:
         # dot-separated identifier from left to right until a difference
         # is found
 
-        def is_integer(x):
-            return all([ch in "0123456789" for ch in str(x)])
-
         these_fields = self.prerelease.split('.')
         those_fields = other.prerelease.split('.')
         for this, that in zip_longest(these_fields, those_fields):
@@ -233,19 +204,21 @@ class Version:
                 return 1
 
             # 11.4.1 Integers are compared numerically
-            if is_integer(this) and is_integer(that):
-                this = int(this)
-                that = int(that)
-                if this < that:
-                    return -1
-                if this > that:
-                    return 1
+            if this and that:
+                if is_numeric(this) and is_numeric(that):
+                    intthis = int(this)
+                    intthat = int(that)
+                    if intthis < intthat:
+                        return -1
+                    if intthis > intthat:
+                        return 1
 
             # 11.4.3 Numerics are always less than non-numerics
-            if is_integer(this) and not is_integer(that):
-                return -1
-            if not is_integer(this) and is_integer(that):
-                return 1
+            if this and that:
+                if is_numeric(this) and not is_numeric(that):
+                    return -1
+                if not is_numeric(this) and is_numeric(that):
+                    return 1
 
             # 11.4.2 Nonnumeric fields are compared lexicographically
             if this < that:
