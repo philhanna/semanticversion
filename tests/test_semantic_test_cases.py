@@ -1,6 +1,7 @@
 """Test data taken from https://regex101.com/r/Ly7O1x/3/"""
-from semver import Version
 import pytest
+
+from semver import Version
 
 
 # GOOD STRINGS

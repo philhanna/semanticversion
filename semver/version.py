@@ -1,6 +1,6 @@
+import re
 from functools import total_ordering
 from itertools import zip_longest
-import re
 
 
 def is_numeric(arg: str) -> bool:
