@@ -90,6 +90,7 @@ type Version struct {
 	Patch         int
 	Prerelease    string
 	Buildmetadata string
+	VersionString string
 }
 
 // ---------------------------------------------------------------------
@@ -103,6 +104,7 @@ type Version struct {
 // working with Go best practices.
 func NewVersion(vs string) (Version, error) {
 	p := new(Version)
+	p.VersionString = vs
 	reParts := []string{
 		`^`,
 		`v?`,
@@ -234,11 +236,6 @@ func (self Version) Compare(other Version) int {
 
 	// Welp, they must be equal
 	return 0
-}
-
-// Less allows versions to be sorted
-func (v Version) Less(other Version) bool {
-	return v.Compare(other) < 0
 }
 
 // String returns a string representation of this Version

@@ -1,6 +1,7 @@
 package semver
 
 import (
+	"sort"
 	"testing"
 )
 
@@ -44,48 +45,47 @@ func TestOrder_11_4(t *testing.T) {
 	assertLess(t, g, h)
 }
 
-/*
 func TestOrder_equal_full(t *testing.T) {
-    a := Version("1.2.3-RC1+build3562")
-    b := Version("1.2.3-RC2+build3562")
-    assert a == a
-    assert not a == b
+    a, _ := NewVersion("1.2.3-RC1+build3562")
+    b, _ := NewVersion("1.2.3-RC2+build3562")
+    assertEqual(t, a, a)
+    assertNotEqual(t, a, b)
 }
 
 func TestOrder_equal_no_build_metadata(t *testing.T) {
-    a := Version("1.2.3-RC1")
-    b := Version("1.2.3-RC2")
-    assert a == a
-    assert not a == b
+    a, _ := NewVersion("1.2.3-RC1")
+    b, _ := NewVersion("1.2.3-RC2")
+    assertEqual(t, a, a)
+    assertNotEqual(t, a, b)
 }
 
 func TestOrder_equal_no_prerelease(t *testing.T) {
-    a := Version("1.2.3+build3562")
-    b := Version("1.2.3+build3563")
-    assert a == a
-    assert a == b
+    a, _ := NewVersion("1.2.3+build3562")
+    b, _ := NewVersion("1.2.3+build3563")
+    assertEqual(t, a, a)
+    assertEqual(t, a, b)
 }
 
 func TestOrder_compare_longer_prerelease(t *testing.T) {
-    a := Version("1.0.0-alpha")
-    b := Version("1.0.0-alpha.rc1")
-    assert a < b
+    a, _ := NewVersion("1.0.0-alpha")
+    b, _ := NewVersion("1.0.0-alpha.rc1")
+    assertLess(t, a, b)
 }
 
 func TestOrder_compare_with_prerelease(t *testing.T) {
-    a := Version("1.2.3----R-S.12.9.1--.12+meta")
-    b := Version("1.1.7")
-    assert a > b
+    a, _ := NewVersion("1.2.3----R-S.12.9.1--.12+meta")
+    b, _ := NewVersion("1.1.7")
+    assertGreater(t, a, b)
 }
 
 func TestOrder_single_digit_vs_double_digit(t *testing.T) {
-    a := Version("2.3.4-10")
-    b := Version("2.3.4-2")
-    assert a > b
+    a, _ := NewVersion("2.3.4-10")
+    b, _ := NewVersion("2.3.4-2")
+    assertGreater(t, a, b)
 }
 
 func TestOrder_sort(t *testing.T) {
-    version_strings := [
+    expectedList := []string{
         "0.0.4",
         "1.0.0-0A.is.legal",
         "1.0.0-alpha",
@@ -117,15 +117,35 @@ func TestOrder_sort(t *testing.T) {
         "10.2.3-DEV-SNAPSHOT",
         "10.20.30",
         "99999999999999999999999.999999999999999999.99999999999999999",
-    ]
+    }
 
-    expected_list: list[str] := version_strings
-    actual_version_list: list[Version] := [Version(x) for x in version_strings]
-    actual_version_list.sort(key:=lambda x: x)
-    actual_list: list[str] := [x.version_string for x in actual_version_list]
-    assert actual_list == expected_list
+    // Convert all version strings to Version types
+    actualVersionList := make([]Version, 0, len(expectedList))
+    for _, s := range expectedList {
+        version, _ := NewVersion(s)
+        actualVersionList = append(actualVersionList, version)
+    }
+
+    // Sort by the Version Compare function
+    sort.Slice(actualVersionList, func(i, j int) bool {
+        return actualVersionList[i].Compare(actualVersionList[j]) < 0
+    })
+
+    // Copy the versions back to a list of strings
+    actualList := make([]string, 0, len(actualVersionList))
+    for _, v := range actualVersionList {
+        actualList = append(actualList, v.VersionString)
+    }
+
+    for i := range actualList {
+        have := actualList[i]
+        want := expectedList[i]
+        if have != want {
+            t.Errorf("At %d, have=%q, want=%q", i, have, want)
+        }
+    }
 }
-*/
+
 
 func assertLess(t *testing.T, a Version, b Version) {
 	if !(a.Compare(b) < 0) {
@@ -139,8 +159,26 @@ func assertGreater(t *testing.T, a Version, b Version) {
 	}
 }
 
+func assertEqual(t *testing.T, a Version, b Version) {
+	if !(a.Compare(b) == 0) {
+		t.Errorf("%s is not equal to %s", a, b)
+	}
+}
+
 func assertGreaterOrEqual(t *testing.T, a Version, b Version) {
 	if !(a.Compare(b) >= 0) {
 		t.Errorf("%s is not greater than or equal to %s", a, b)
+	}
+}
+
+func assertLessOrEqual(t *testing.T, a Version, b Version) {
+	if !(a.Compare(b) <= 0) {
+		t.Errorf("%s is not less than or equal to %s", a, b)
+	}
+}
+
+func assertNotEqual(t *testing.T, a Version, b Version) {
+	if !(a.Compare(b) != 0) {
+		t.Errorf("%s is equal to %s", a, b)
 	}
 }

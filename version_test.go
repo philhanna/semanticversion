@@ -17,6 +17,7 @@ func TestNewVersion(t *testing.T) {
 			Patch:         0,
 			Prerelease:    "alpha",
 			Buildmetadata: "",
+			VersionString: "1.0.0-alpha",
 		}, true},
 	}
 	for _, tt := range tests {
