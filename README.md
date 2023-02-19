@@ -1,8 +1,9 @@
 # Semantic Version
+[![Go Report Card](https://goreportcard.com/badge/github.com/philhanna/semanticversion)][idGoReportCard]
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/philhanna/semanticversion)][idPkgGoDev]
+
 Go implementation of a semantic versioned `Version` class.
 See [https://semver.org][idSemver] for a normative description of semantic versioning.
-
-[![Go Report Card](https://goreportcard.com/badge/github.com/philhanna/semanticversion)](https://goreportcard.com/report/github.com/philhanna/semanticversion) [![PkgGoDev](https://pkg.go.dev/badge/github.com/philhanna/semanticversion)](https://pkg.go.dev/github.com/philhanna/semanticversion)
 
 ## Overview
 The basic structure of a semantic version is `major.minor.patch`,
@@ -87,3 +88,5 @@ seem to be irrelevant in actual usage.
 
 [idSemver]: https://semver.org
 [idRegex]: https://regex101.com/r/Ly7O1x/3
+[idGoReportCard]: https://goreportcard.com/report/github.com/philhanna/semanticversion
+[idPkgGoDev]: https://pkg.go.dev/github.com/philhanna/semanticversion
