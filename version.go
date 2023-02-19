@@ -123,9 +123,9 @@ func NewVersion(vs string) (Version, error) {
 	}
 
 	// Populate the structure
-	p.Major, _= strconv.Atoi(tokens[1])
-	p.Minor, _= strconv.Atoi(tokens[2])
-	p.Patch, _= strconv.Atoi(tokens[3])
+	p.Major, _ = strconv.Atoi(tokens[1])
+	p.Minor, _ = strconv.Atoi(tokens[2])
+	p.Patch, _ = strconv.Atoi(tokens[3])
 	p.Prerelease = tokens[4]
 	p.Buildmetadata = tokens[5]
 
@@ -146,12 +146,18 @@ func NewVersion(vs string) (Version, error) {
 
 func (self Version) Compare(other Version) int {
 	switch {
-	case self.Major < other.Major: return -1
-	case self.Major > other.Major: return 1
-	case self.Minor < other.Minor: return -1
-	case self.Minor > other.Minor: return 1
-	case self.Patch < other.Patch: return -1
-	case self.Patch > other.Patch: return 1
+	case self.Major < other.Major:
+		return -1
+	case self.Major > other.Major:
+		return 1
+	case self.Minor < other.Minor:
+		return -1
+	case self.Minor > other.Minor:
+		return 1
+	case self.Patch < other.Patch:
+		return -1
+	case self.Patch > other.Patch:
+		return 1
 	}
 
 	// At this point, we know the three primary components are equal.
@@ -174,48 +180,66 @@ func (self Version) Compare(other Version) int {
 	// dot-separated identifier from left to right until a difference is
 	// found
 
-	these_fields = self.prerelease.split('.')
-	those_fields = other.prerelease.split('.')
-	for this, that in zip_longest(these_fields, those_fields):
+	theseFields := strings.Split(self.Prerelease, ".")
+	thoseFields := strings.Split(other.Prerelease, ".")
+
+	// Need to make these two lists the same length for joint iteration
+	for len(theseFields) < len(thoseFields) {
+		theseFields = append(theseFields, "")
+	}
+	for len(theseFields) > len(thoseFields) {
+		thoseFields = append(thoseFields, "")
+	}
+
+	for i := range theseFields {
+		this := theseFields[i]
+		that := thoseFields[i]
 
 		// 11.4.4 Longer sets are greater than shorter sets
-
-		if this is None and that is not None:
+		if this == "" && that != "" {
 			return -1
-		if this is not None and that is None:
+		}
+		if this != "" && that == "" {
 			return 1
+		}
 
-		// 11.4.1 Integers are compared numerically
-
-		if this and that:
-			if is_numeric(this) and is_numeric(that):
-				intthis = int(this)
-				intthat = int(that)
-				if intthis < intthat:
+		if this != "" && that != "" {
+			// 11.4.1 Integers are compared numerically
+			if isNumeric(this) && isNumeric(that) {
+				intthis, _ := strconv.Atoi(this)
+				intthat, _ := strconv.Atoi(that)
+				if intthis < intthat {
 					return -1
-				if intthis > intthat:
+				}
+				if intthis > intthat {
 					return 1
-
-		// 11.4.3 Numerics are always less than non-numerics
-
-		if this and that:
-			if is_numeric(this) and not is_numeric(that):
+				}
+			}
+			// 11.4.3 Numerics are always less than non-numerics
+			if isNumeric(this) && !isNumeric(that) {
 				return -1
-			if not is_numeric(this) and is_numeric(that):
+			}
+			if !isNumeric(this) && isNumeric(that) {
 				return 1
-
-		// 11.4.2 Nonnumeric fields are compared lexicographically
-		if this < that:
-			return -1
-		if this > that:
-			return 1
+			}
+			// 11.4.2 Nonnumeric fields are compared lexicographically
+			if this < that {
+				return -1
+			}
+			if this > that {
+				return 1
+			}
+		}
+	}
 
 	// Welp, they must be equal
-
 	return 0
-
 }
 
+// Less allows versions to be sorted
+func (v Version) Less(other Version) bool {
+	return v.Compare(other) < 0
+}
 
 // String returns a string representation of this Version
 func (v Version) String() string {
@@ -228,4 +252,19 @@ func (v Version) String() string {
 	}
 	s := "Version{" + strings.Join(parts, ", ") + "}"
 	return s
+}
+
+// ---------------------------------------------------------------------
+// Functions
+// ---------------------------------------------------------------------
+
+// isNumeric returns true if the string is composed entirely of digits
+func isNumeric(s string) bool {
+	for _, ch := range s {
+		if ch >= '0' && ch <= '9' {
+			continue
+		}
+		return false
+	}
+	return true
 }
