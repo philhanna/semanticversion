@@ -75,6 +75,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -84,9 +85,9 @@ import (
 
 // Version contains the parsed components of a version string.
 type Version struct {
-	Major         string
-	Minor         string
-	Patch         string
+	Major         int
+	Minor         int
+	Patch         int
 	Prerelease    string
 	Buildmetadata string
 }
@@ -122,21 +123,29 @@ func NewVersion(vs string) (Version, error) {
 	}
 
 	// Populate the structure
-	p.Major = tokens[1]
-	p.Minor = tokens[2]
-	p.Patch = tokens[3]
+	p.Major, _= strconv.Atoi(tokens[1])
+	p.Minor, _= strconv.Atoi(tokens[2])
+	p.Patch, _= strconv.Atoi(tokens[3])
 	p.Prerelease = tokens[4]
 	p.Buildmetadata = tokens[5]
 
 	return *p, nil
 }
 
+// Compare compares two versions and returns -1, 0, or 1
+//
+// Note that build metadata is NOT considered in precedence comparisons,
+// according to the specification.
+func (v Version) Compare(other Version) int {
+	return 0 // TODO implement me
+}
+
 // String returns a string representation of this Version
 func (v Version) String() string {
 	parts := []string{
-		fmt.Sprintf("Major: %q", v.Major),
-		fmt.Sprintf("Minor: %q", v.Minor),
-		fmt.Sprintf("Patch: %q", v.Patch),
+		fmt.Sprintf("Major: %d", v.Major),
+		fmt.Sprintf("Minor: %d", v.Minor),
+		fmt.Sprintf("Patch: %d", v.Patch),
 		fmt.Sprintf("Prerelease: %q", v.Prerelease),
 		fmt.Sprintf("Buildmetadata: %q", v.Buildmetadata),
 	}
