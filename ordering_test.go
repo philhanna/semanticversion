@@ -9,26 +9,6 @@ import (
 // given in the document.  I cover all the examples and have added test
 // cases of my own.
 
-func assertLess(t *testing.T, a Version, b Version) {
-    if !(a.Compare(b) < 0) {
-        t.Errorf("%s is not less than %s", a, b)
-    }
-}
-
-func assertGreater(t *testing.T, a Version, b Version) {
-    if !(a.Compare(b) > 0) {
-        t.Errorf("%s is not greater than %s", a, b)
-    }
-}
-
-func assertGreaterOrEqual(t *testing.T, a Version, b Version) {
-    if !(a.Compare(b) >= 0) {
-        t.Errorf("%s is not greater than or equal to %s", a, b)
-    }
-}
-
-
-
 func TestOrder_11_2(t *testing.T) {
 	a, _ := NewVersion("1.0.0")
 	b, _ := NewVersion("2.0.0")
@@ -43,7 +23,7 @@ func TestOrder_11_2(t *testing.T) {
 func TestOrder_11_3(t *testing.T) {
     a, _ := NewVersion("1.0.0-alpha")
     b, _ := NewVersion("1.0.0")
-    assert.Less(t, a, b)
+    assertLess(t, a, b)
 }
 
 /*
@@ -146,3 +126,21 @@ func TestOrder_sort(t *testing.T) {
     assert actual_list == expected_list
 }
 */
+
+func assertLess(t *testing.T, a Version, b Version) {
+    if !(a.Compare(b) < 0) {
+        t.Errorf("%s is not less than %s", a, b)
+    }
+}
+
+func assertGreater(t *testing.T, a Version, b Version) {
+    if !(a.Compare(b) > 0) {
+        t.Errorf("%s is not greater than %s", a, b)
+    }
+}
+
+func assertGreaterOrEqual(t *testing.T, a Version, b Version) {
+    if !(a.Compare(b) >= 0) {
+        t.Errorf("%s is not greater than or equal to %s", a, b)
+    }
+}
