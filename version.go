@@ -100,7 +100,7 @@ type Version struct {
 //
 // NOTE: The regular expression defined at https://semver.org does not
 // include a leading "v", but this constructor does, for convenience in
-// working with Go version best practices.
+// working with Go best practices.
 func NewVersion(vs string) (Version, error) {
 	p := new(Version)
 	reParts := []string{
@@ -136,13 +136,86 @@ func NewVersion(vs string) (Version, error) {
 // Methods
 // ---------------------------------------------------------------------
 
-// Compare compares two versions and returns -1, 0, or 1
+// Compare compares two versions and returns -1, 0, or 1, depending on
+// whether this version is less than, equal to, or greater than the
+// other version. The comparisons are done according to Section 11 of
+// the specification.
 //
 // Note that build metadata is NOT considered in precedence comparisons,
 // according to the specification.
-func (v Version) Compare(other Version) int {
-	return 0 // TODO implement me
+
+func (self Version) Compare(other Version) int {
+	switch {
+	case self.Major < other.Major: return -1
+	case self.Major > other.Major: return 1
+	case self.Minor < other.Minor: return -1
+	case self.Minor > other.Minor: return 1
+	case self.Patch < other.Patch: return -1
+	case self.Patch > other.Patch: return 1
+	}
+
+	// At this point, we know the three primary components are equal.
+
+	// 11.3 A pre-release version has lower precedence than a normal
+	// version
+
+	if self.Prerelease == "" && other.Prerelease == "" {
+		return 0
+	}
+	if self.Prerelease != "" && other.Prerelease == "" {
+		return -1
+	}
+	if self.Prerelease == "" && other.Prerelease != "" {
+		return 1
+	}
+
+	// 11.4 - Precedence for two pre-release versions with the same
+	// major, minor, and patch must be determined by comparing each
+	// dot-separated identifier from left to right until a difference is
+	// found
+
+	these_fields = self.prerelease.split('.')
+	those_fields = other.prerelease.split('.')
+	for this, that in zip_longest(these_fields, those_fields):
+
+		// 11.4.4 Longer sets are greater than shorter sets
+
+		if this is None and that is not None:
+			return -1
+		if this is not None and that is None:
+			return 1
+
+		// 11.4.1 Integers are compared numerically
+
+		if this and that:
+			if is_numeric(this) and is_numeric(that):
+				intthis = int(this)
+				intthat = int(that)
+				if intthis < intthat:
+					return -1
+				if intthis > intthat:
+					return 1
+
+		// 11.4.3 Numerics are always less than non-numerics
+
+		if this and that:
+			if is_numeric(this) and not is_numeric(that):
+				return -1
+			if not is_numeric(this) and is_numeric(that):
+				return 1
+
+		// 11.4.2 Nonnumeric fields are compared lexicographically
+		if this < that:
+			return -1
+		if this > that:
+			return 1
+
+	// Welp, they must be equal
+
+	return 0
+
 }
+
 
 // String returns a string representation of this Version
 func (v Version) String() string {
