@@ -10,13 +10,20 @@ func TestNewVersion(t *testing.T) {
 		want          Version
 		wantErr       bool
 	}{
-		{"1.0.0-alpha", Version{
+		{"bad", Version{
 			Major: "1",
 			Minor: "0",
 			Patch: "0",
 			Prerelease: "alpha",
 			Buildmetadata: "",
 		}, true},
+		{"1.0.0-alpha", Version{
+			Major: "1",
+			Minor: "0",
+			Patch: "0",
+			Prerelease: "alpha",
+			Buildmetadata: "",
+		}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

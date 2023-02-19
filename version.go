@@ -140,6 +140,6 @@ func (v Version) String() string {
 		fmt.Sprintf("Prerelease: %q", v.Prerelease),
 		fmt.Sprintf("Buildmetadata: %q", v.Buildmetadata),
 	}
-	s := "Version(" + strings.Join(parts, ", ") + ")"
+	s := "Version{" + strings.Join(parts, ", ") + "}"
 	return s
 }
