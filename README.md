@@ -2,6 +2,8 @@
 Go implementation of a semantic versioned `Version` class.
 See [https://semver.org][idSemver] for a normative description of semantic versioning.
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/philhanna/semanticversion)](https://goreportcard.com/report/github.com/philhanna/semanticversion) [![PkgGoDev](https://pkg.go.dev/badge/github.com/philhanna/semanticversion)](https://pkg.go.dev/github.com/philhanna/semanticversion)
+
 ## Overview
 The basic structure of a semantic version is `major.minor.patch`,
 where each component is an integer with no leading zeros.
