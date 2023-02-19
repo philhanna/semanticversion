@@ -145,7 +145,6 @@ func NewVersion(vs string) (Version, error) {
 //
 // Note that build metadata is NOT considered in precedence comparisons,
 // according to the specification.
-
 func (self Version) Compare(other Version) int {
 	switch {
 	case self.Major < other.Major:
