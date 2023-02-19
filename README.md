@@ -73,8 +73,15 @@ as follows:
     < 1.0.0-beta < 1.0.0-beta.2 < 1.0.0-beta.11
     < 1.0.0-rc.1 < 1.0.0.
 
+## Regular expression
 See [https://regex101.com/r/Ly7O1x/3][idRegex]
 for the regular expression used to parse the version string.
+
+### Note
+The website includes "99999999999999999999999.999999999999999999.99999999999999999"
+as a valid Version string, but this contains components that overflow integer
+literals in Go, even uint64. I have omitted this test case, but it would
+seem to be irrelevant in actual usage.
 
 [idSemver]: https://semver.org
 [idRegex]: https://regex101.com/r/Ly7O1x/3
