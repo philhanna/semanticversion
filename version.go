@@ -70,3 +70,69 @@
 // See https://regex101.com/r/Ly7O1x/3/ for the regular expression used
 // to parse the version string.
 package semver
+
+import (
+	"errors"
+	"fmt"
+	"regexp"
+	"strings"
+)
+
+// ---------------------------------------------------------------------
+// Type definitions
+// ---------------------------------------------------------------------
+
+// Version contains the parsed components of a version string.
+type Version struct {
+	Major string
+	Minor string
+	Patch string
+	Prerelease string
+	Buildmetadata string
+}
+
+// ---------------------------------------------------------------------
+// Constructors
+// ---------------------------------------------------------------------
+
+// NewVersion parses a version string and returns a new Version from it.
+func NewVersion(vs string) (Version, error) {
+	p := new(Version)
+	reParts := []string{
+		`^`,
+		`v?`,
+		`(?P<major>0|[1-9]\d*)`,
+		`\.`,
+		`(?P<minor>0|[1-9]\d*)`,
+		`\.`,
+		`(?P<patch>0|[1-9]\d*)`,
+		`(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+`,
+		`(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`,
+		}
+	reString := strings.Join(reParts, "")
+	re := regexp.MustCompile(reString)
+	tokens := re.FindStringSubmatch(vs)
+	if tokens == nil {
+		return Version{}, errors.New("Invalid version string")
+	}
+	p.Major = tokens[1]
+	p.Minor = tokens[2]
+	p.Patch = tokens[3]
+	p.Prerelease = tokens[4]
+	p.Buildmetadata = tokens[5]
+
+	return *p, nil
+}
+
+// String returns a string representation of this Version
+func (v Version) String() string {
+	parts := []string{
+		fmt.Sprintf("Major: %q", v.Major),
+		fmt.Sprintf("Minor: %q", v.Minor),
+		fmt.Sprintf("Patch: %q", v.Patch),
+		fmt.Sprintf("Prerelease: %q", v.Prerelease),
+		fmt.Sprintf("Buildmetadata: %q", v.Buildmetadata),
+	}
+	s := "Version(" + strings.Join(parts, ", ") + ")"
+	return s
+}
