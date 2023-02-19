@@ -132,6 +132,10 @@ func NewVersion(vs string) (Version, error) {
 	return *p, nil
 }
 
+// ---------------------------------------------------------------------
+// Methods
+// ---------------------------------------------------------------------
+
 // Compare compares two versions and returns -1, 0, or 1
 //
 // Note that build metadata is NOT considered in precedence comparisons,
