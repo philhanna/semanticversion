@@ -84,10 +84,10 @@ import (
 
 // Version contains the parsed components of a version string.
 type Version struct {
-	Major string
-	Minor string
-	Patch string
-	Prerelease string
+	Major         string
+	Minor         string
+	Patch         string
+	Prerelease    string
 	Buildmetadata string
 }
 
@@ -96,6 +96,10 @@ type Version struct {
 // ---------------------------------------------------------------------
 
 // NewVersion parses a version string and returns a new Version from it.
+//
+// NOTE: The regular expression defined at https://semver.org does not
+// include a leading "v", but this constructor does, for convenience in
+// working with Go version best practices.
 func NewVersion(vs string) (Version, error) {
 	p := new(Version)
 	reParts := []string{
@@ -108,13 +112,16 @@ func NewVersion(vs string) (Version, error) {
 		`(?P<patch>0|[1-9]\d*)`,
 		`(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+`,
 		`(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`,
-		}
+	}
 	reString := strings.Join(reParts, "")
 	re := regexp.MustCompile(reString)
 	tokens := re.FindStringSubmatch(vs)
 	if tokens == nil {
-		return Version{}, errors.New("Invalid version string")
+		errmsg := fmt.Sprintf("Invalid version string: %s", vs)
+		return Version{}, errors.New(errmsg)
 	}
+
+	// Populate the structure
 	p.Major = tokens[1]
 	p.Minor = tokens[2]
 	p.Patch = tokens[3]
