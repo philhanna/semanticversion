@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning].
 The format is based on [Keep a Changelog].
 
 ## [Unreleased]
+Added badges to `README.md`
 
 ## [v1.0.0] - 2023-02-19
 
