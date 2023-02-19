@@ -21,30 +21,30 @@ func TestOrder_11_2(t *testing.T) {
 }
 
 func TestOrder_11_3(t *testing.T) {
-    a, _ := NewVersion("1.0.0-alpha")
-    b, _ := NewVersion("1.0.0")
-    assertLess(t, a, b)
+	a, _ := NewVersion("1.0.0-alpha")
+	b, _ := NewVersion("1.0.0")
+	assertLess(t, a, b)
+}
+
+func TestOrder_11_4(t *testing.T) {
+	a, _ := NewVersion("1.0.0-alpha")
+	b, _ := NewVersion("1.0.0-alpha.1")
+	c, _ := NewVersion("1.0.0-alpha.beta")
+	d, _ := NewVersion("1.0.0-beta")
+	e, _ := NewVersion("1.0.0-beta.2")
+	f, _ := NewVersion("1.0.0-beta.11")
+	g, _ := NewVersion("1.0.0-rc.1")
+	h, _ := NewVersion("1.0.0")
+	assertLess(t, a, b)
+	assertLess(t, b, c)
+	assertLess(t, c, d)
+	assertLess(t, d, e)
+	assertLess(t, e, f)
+	assertLess(t, f, g)
+	assertLess(t, g, h)
 }
 
 /*
-func TestOrder_11_4(t *testing.T) {
-    a := Version("1.0.0-alpha")
-    b := Version("1.0.0-alpha.1")
-    c := Version("1.0.0-alpha.beta")
-    d := Version("1.0.0-beta")
-    e := Version("1.0.0-beta.2")
-    f := Version("1.0.0-beta.11")
-    g := Version("1.0.0-rc.1")
-    h := Version("1.0.0")
-    assert a < b
-    assert b < c
-    assert c < d
-    assert d < e
-    assert e < f
-    assert f < g
-    assert g < h
-}
-
 func TestOrder_equal_full(t *testing.T) {
     a := Version("1.2.3-RC1+build3562")
     b := Version("1.2.3-RC2+build3562")
@@ -128,19 +128,19 @@ func TestOrder_sort(t *testing.T) {
 */
 
 func assertLess(t *testing.T, a Version, b Version) {
-    if !(a.Compare(b) < 0) {
-        t.Errorf("%s is not less than %s", a, b)
-    }
+	if !(a.Compare(b) < 0) {
+		t.Errorf("%s is not less than %s", a, b)
+	}
 }
 
 func assertGreater(t *testing.T, a Version, b Version) {
-    if !(a.Compare(b) > 0) {
-        t.Errorf("%s is not greater than %s", a, b)
-    }
+	if !(a.Compare(b) > 0) {
+		t.Errorf("%s is not greater than %s", a, b)
+	}
 }
 
 func assertGreaterOrEqual(t *testing.T, a Version, b Version) {
-    if !(a.Compare(b) >= 0) {
-        t.Errorf("%s is not greater than or equal to %s", a, b)
-    }
+	if !(a.Compare(b) >= 0) {
+		t.Errorf("%s is not greater than or equal to %s", a, b)
+	}
 }
