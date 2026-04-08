@@ -6,15 +6,57 @@ Go implementation of a semantic versioned `Version` class.
 See [https://semver.org][idSemver] for a normative description of semantic versioning.
 
 ## Overview
+
+This is a **pure Go library** — no CLI is included. Import it to parse, validate,
+and compare semantic version strings in your own Go programs.
+
+It provides a `Version` type that:
+
+- **Parses** version strings in `major.minor.patch` format, where all three numeric components are required
+- **Supports optional components**: a prerelease label (after `-`) and build metadata (after `+`)
+- **Compares/orders** versions according to the semver spec
+- **Validates** version strings using the canonical semver regular expression
+- **Accepts an optional leading `v`** (e.g. `v1.2.3`) as a convenience for Go conventions
+
 The basic structure of a semantic version is `major.minor.patch`,
 where each component is an integer with no leading zeros.
 These three components are all required.
 
 A semantic version may also contain:
-- A prerelease component, which follows the first '-' and ends
-at the first '+', if any
-- A buildmetadata component, which follows the first '+'
+- A prerelease component, which follows the first `-` and ends
+at the first `+`, if any
+- A buildmetadata component, which follows the first `+`
 Both of these are optional.
+
+## API
+
+### `NewVersion(vs string) (Version, error)`
+
+Parses a version string and returns a `Version`. Returns an error if the string
+is not a valid semantic version.
+
+```go
+v, err := semver.NewVersion("1.2.3-alpha.1+build.42")
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println(v.Major)         // 1
+fmt.Println(v.Minor)         // 2
+fmt.Println(v.Patch)         // 3
+fmt.Println(v.Prerelease)    // alpha.1
+fmt.Println(v.Buildmetadata) // build.42
+```
+
+### `(Version) Compare(other Version) int`
+
+Compares two versions and returns `-1`, `0`, or `1` (less than, equal, greater than).
+Build metadata is ignored in comparisons per the spec.
+
+```go
+a, _ := semver.NewVersion("1.0.0-alpha")
+b, _ := semver.NewVersion("1.0.0")
+fmt.Println(a.Compare(b)) // -1 (prerelease is lower than release)
+```
 
 ## Semantics of each component
 
